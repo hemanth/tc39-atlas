@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import {
   ArrowRight,
   BookOpen,
-  Terminal,
-  Copy,
-  Check,
+  Activity,
   ShieldAlert,
   AlertTriangle,
   Flame,
@@ -99,16 +97,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onApplyPreset,
 }) => {
   const [selectedShowcaseIndex, setSelectedShowcaseIndex] = useState<number>(0);
-  const [copiedCommand, setCopiedCommand] = useState<boolean>(false);
-  const [terminalQuery, setTerminalQuery] = useState<string>('tc39 query --stage=4 --compat=hazardous');
 
   const activeShowcase = SHOWCASE_ITEMS[selectedShowcaseIndex];
-
-  const handleCopyCommand = () => {
-    navigator.clipboard?.writeText(terminalQuery);
-    setCopiedCommand(true);
-    setTimeout(() => setCopiedCommand(false), 2000);
-  };
 
   const handleInspectShowcase = () => {
     if (onSelectProposal) {
@@ -207,81 +197,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 web-compatibility hazards, and real-world motivations behind all 324 proposals.
               </p>
 
-              {/* Interactive Terminal / Command Pill */}
-              <div className="max-w-xl pt-2">
-                <div className="group relative flex items-center justify-between gap-3 overflow-hidden rounded-2xl bg-[#141414] px-4 py-3 text-left text-neutral-100 shadow-[0_14px_30px_-12px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] ring-1 ring-black/25 transition-all duration-300 hover:bg-[#1a1a1a]">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1 font-mono text-xs sm:text-sm text-neutral-200">
-                    <span className="text-[#ff6b00] font-bold select-none">$</span>
-                    <span className="truncate">{terminalQuery}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleCopyCommand}
-                    className="flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-lg bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors text-xs font-mono"
-                    title="Copy command"
-                  >
-                    {copiedCommand ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400">Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5 text-neutral-400 group-hover:text-neutral-200" />
-                        <span className="hidden sm:inline text-neutral-400">Copy</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {/* Preset Chips */}
-                <div className="flex items-center gap-2 pt-2.5 text-[11px] font-mono text-neutral-500">
-                  <span className="text-neutral-400">Preset telemetry:</span>
-                  <button
-                    onClick={() => {
-                      setTerminalQuery('tc39 query --stage=4 --compat=hazardous');
-                      setSelectedShowcaseIndex(0);
-                    }}
-                    className={`px-2 py-0.5 rounded-md border transition-all ${
-                      selectedShowcaseIndex === 0
-                        ? 'border-[#ff6b00]/60 bg-[#ff6b00]/10 text-[#cc5400] font-medium'
-                        : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400'
-                    }`}
-                  >
-                    SmooshGate
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTerminalQuery('tc39 query --intent="Defensive Sandboxing"');
-                      setSelectedShowcaseIndex(1);
-                    }}
-                    className={`px-2 py-0.5 rounded-md border transition-all ${
-                      selectedShowcaseIndex === 1
-                        ? 'border-[#ff6b00]/60 bg-[#ff6b00]/10 text-[#cc5400] font-medium'
-                        : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400'
-                    }`}
-                  >
-                    Security Wall
-                  </button>
-                  <button
-                    onClick={() => {
-                      setTerminalQuery('tc39 query --disruption=">=3.8" --value-types');
-                      setSelectedShowcaseIndex(2);
-                    }}
-                    className={`px-2 py-0.5 rounded-md border transition-all ${
-                      selectedShowcaseIndex === 2
-                        ? 'border-[#ff6b00]/60 bg-[#ff6b00]/10 text-[#cc5400] font-medium'
-                        : 'border-neutral-300 bg-white text-neutral-600 hover:border-neutral-400'
-                    }`}
-                  >
-                    Value Semantics
-                  </button>
-                </div>
-              </div>
-
               {/* Action CTAs */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3 max-w-xl">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-4 max-w-xl">
                 <button
                   onClick={onExplore}
                   className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-[#0a0a0a] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_14px_32px_-8px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.14)] ring-1 ring-black/30 transition-all duration-300 hover:shadow-[0_20px_40px_-10px_rgba(255,107,0,0.35)] hover:bg-[#141414] active:scale-[0.98]"
@@ -300,14 +217,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Interactive Live Spec Telemetry Terminal Card */}
+            {/* RIGHT COLUMN: Interactive Live Spec Telemetry Showcase Card */}
             <div className="lg:col-span-5">
               <div className="relative rounded-3xl border border-neutral-300/80 bg-white/95 p-6 sm:p-7 shadow-[0_20px_50px_-15px_rgba(15,15,15,0.15)] backdrop-blur-md space-y-5 transition-all">
                 {/* Card Header & Proposal Switcher Tabs */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-xs font-mono text-neutral-400 pb-2 border-b border-neutral-200/80">
                     <span className="flex items-center gap-1.5 font-medium text-neutral-600">
-                      <Terminal className="w-3.5 h-3.5 text-[#ff6b00]" />
+                      <Activity className="w-3.5 h-3.5 text-[#ff6b00]" />
                       <span>Live Proposal Telemetry</span>
                     </span>
                     <span className="text-[11px] text-neutral-400 font-mono">Sample 1 of 324</span>
