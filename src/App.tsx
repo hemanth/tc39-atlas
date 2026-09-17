@@ -130,6 +130,26 @@ export const App: React.FC = () => {
     setSelectedProposal(updated);
   };
 
+  const handleNavigateToProposal = (proposalId: string) => {
+    const p = proposalsList.find((item) => item.id === proposalId);
+    if (p) {
+      setSelectedProposal(p);
+    }
+    handleViewChange('explorer');
+  };
+
+  const handleApplyPresetAndExplore = (preset: Partial<FilterOptions>) => {
+    setFilters({
+      ...initialFilters,
+      stages: new Set<StageType>(),
+      intents: new Set<IntentArchetype>(),
+      cognitiveOverheads: new Set<CognitiveOverheadLevel>(),
+      webCompatRisks: new Set<WebCompatRiskLevel>(),
+      ...preset,
+    });
+    handleViewChange('explorer');
+  };
+
   // Compute filtered proposals and optional semantic scores
   const { filteredProposals, semanticScores } = useMemo(() => {
     const scores = new Map<string, number>();
@@ -298,6 +318,8 @@ export const App: React.FC = () => {
         <LandingPage
           onExplore={() => handleViewChange('explorer')}
           onOpenGuide={() => handleViewChange('guide')}
+          onSelectProposal={handleNavigateToProposal}
+          onApplyPreset={handleApplyPresetAndExplore}
         />
       )}
 

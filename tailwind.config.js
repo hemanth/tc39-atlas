@@ -36,6 +36,7 @@ export default {
       fontFamily: {
         sans: ['Geist', 'Plus Jakarta Sans', 'Inter', '-apple-system', 'sans-serif'],
         mono: ['Geist Mono', 'JetBrains Mono', 'monospace'],
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
       },
       boxShadow: {
         'soft': '0 2px 10px -2px rgba(28, 25, 23, 0.04), 0 1px 3px -1px rgba(28, 25, 23, 0.02)',
