@@ -13,12 +13,14 @@ import {
   WebCompatRiskLevel,
 } from './types';
 import enrichedData from './data/enrichedProposals.json';
-import { Header } from './components/Header';
+import { Header, AppView } from './components/Header';
 import { FilterBar } from './components/FilterBar';
 import { IntentPatternBar } from './components/IntentPatternBar';
 import { ProposalCard } from './components/ProposalCard';
 import { StateInspector } from './components/StateInspector';
 import { ApiKeyModal } from './components/ApiKeyModal';
+import { LandingPage } from './components/LandingPage';
+import { FieldGuide } from './components/FieldGuide';
 import { evaluateNoul } from './lib/typesafeEngine';
 import { Sparkles, FilterX, Heart } from 'lucide-react';
 
@@ -48,6 +50,20 @@ export const App: React.FC = () => {
   const [hasKey, setHasKey] = useState<boolean>(false);
   const [maskedKey, setMaskedKey] = useState<string | null>(null);
   const [isKeyModalOpen, setIsKeyModalOpen] = useState<boolean>(false);
+
+  // Active View State ('landing' | 'explorer' | 'guide')
+  const [activeView, setActiveView] = useState<AppView>(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash === 'explorer') return 'explorer';
+    if (hash === 'guide') return 'guide';
+    return 'landing';
+  });
+
+  const handleViewChange = (view: AppView) => {
+    setActiveView(view);
+    window.location.hash = view;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Check API key status on load
   useEffect(() => {
@@ -273,99 +289,118 @@ export const App: React.FC = () => {
         hasKey={hasKey}
         maskedKey={maskedKey}
         onOpenKeyModal={() => setIsKeyModalOpen(true)}
+        activeView={activeView}
+        onChangeView={handleViewChange}
       />
 
-      {/* Main Layout Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Anti-Center Hero / Context Banner */}
-        <div className="mb-6 bg-gradient-to-r from-pastel-lavender/40 via-pastel-mint/30 to-pastel-peach/30 rounded-2xl p-5 md:p-6 border border-surface-border text-left">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/80 border border-stone-200 text-xs font-semibold text-stone-800 mb-2.5 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-pastel-lavenderDeep" />
-              <span>TypeSafe AI × TC39 Proposals Dataset</span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900 leading-tight">
-              Semantic Architecture for the JavaScript Roadmap
-            </h2>
-            <p className="text-sm text-stone-600 leading-relaxed mt-2">
-              Transforming raw TC39 records into typed, calibrated judgments. Filter proposals by
-              domain, ecosystem disruption score, and natural language criteria using Jev System One primitives.
-            </p>
-          </div>
-        </div>
-
-        {/* Intent Archetypes & Pattern Matrix Bar */}
-        <IntentPatternBar
-          proposals={proposalsList}
-          selectedIntents={filters.intents || new Set()}
-          onToggleIntent={handleToggleIntent}
-          onClearIntents={handleClearIntents}
+      {/* VIEW 1: LANDING / OVERVIEW */}
+      {activeView === 'landing' && (
+        <LandingPage
+          onExplore={() => handleViewChange('explorer')}
+          onOpenGuide={() => handleViewChange('guide')}
         />
+      )}
 
-        {/* Two-Column Split Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column (Feed & Filter): 7 cols on LG */}
-          <div className="lg:col-span-7 space-y-5">
-            {/* Filter Ribbon */}
-            <FilterBar filters={filters} onChange={handleUpdateFilters} />
+      {/* VIEW 2: METRICS & LEGENDS FIELD GUIDE */}
+      {activeView === 'guide' && (
+        <FieldGuide
+          onBackToExplorer={() => handleViewChange('explorer')}
+        />
+      )}
 
-            {/* Proposals Count & Status */}
-            <div className="flex items-center justify-between text-xs text-stone-500 px-1 font-mono">
-              <span>
-                {filteredProposals.length} matching {filteredProposals.length === 1 ? 'proposal' : 'proposals'}
-              </span>
-              {filters.semanticQuery && (
-                <span className="text-pastel-lavenderDeep font-medium">
-                  Ranked by Noul Probability
+      {/* VIEW 3: ATLAS EXPLORER */}
+      {activeView === 'explorer' && (
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Context Banner */}
+          <div className="mb-6 bg-gradient-to-r from-pastel-lavender/40 via-pastel-mint/30 to-pastel-peach/30 rounded-2xl p-5 md:p-6 border border-surface-border text-left">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/80 border border-stone-200 text-xs font-semibold text-stone-800 mb-2.5 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-pastel-lavenderDeep" />
+                <span>TypeSafe AI · ECMAScript Architectural Map</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-stone-900 leading-tight">
+                Semantic Architecture for the JavaScript Roadmap
+              </h2>
+              <p className="text-sm text-stone-600 leading-relaxed mt-2">
+                Transforming raw committee records into typed, calibrated judgments. Filter proposals by
+                domain, ecosystem disruption score, and natural language criteria using Jev System One primitives.
+              </p>
+            </div>
+          </div>
+
+          {/* Intent Archetypes & Pattern Matrix Bar */}
+          <IntentPatternBar
+            proposals={proposalsList}
+            selectedIntents={filters.intents || new Set()}
+            onToggleIntent={handleToggleIntent}
+            onClearIntents={handleClearIntents}
+          />
+
+          {/* Two-Column Split Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left Column (Feed & Filter): 7 cols on LG */}
+            <div className="lg:col-span-7 space-y-5">
+              {/* Filter Ribbon */}
+              <FilterBar filters={filters} onChange={handleUpdateFilters} />
+
+              {/* Proposals Count & Status */}
+              <div className="flex items-center justify-between text-xs text-stone-500 px-1 font-mono">
+                <span>
+                  {filteredProposals.length} matching {filteredProposals.length === 1 ? 'proposal' : 'proposals'}
                 </span>
+                {filters.semanticQuery && (
+                  <span className="text-pastel-lavenderDeep font-medium">
+                    Ranked by Noul Probability
+                  </span>
+                )}
+              </div>
+
+              {/* Empty State */}
+              {filteredProposals.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-surface-border p-10 text-center space-y-3 shadow-soft">
+                  <FilterX className="w-8 h-8 text-stone-300 mx-auto" />
+                  <h3 className="text-sm font-semibold text-stone-800">No proposals match current filters</h3>
+                  <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                    Try clearing the semantic query or expanding the selected stages to see more proposals.
+                  </p>
+                  <button
+                    onClick={handleResetFilters}
+                    className="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-medium hover:bg-stone-800 transition-all shadow-sm active:scale-95"
+                  >
+                    Reset All Filters
+                  </button>
+                </div>
+              ) : (
+                /* Proposal Cards Grid */
+                <div className="grid grid-cols-1 gap-4">
+                  {filteredProposals.map((proposal) => (
+                    <ProposalCard
+                      key={proposal.id}
+                      proposal={proposal}
+                      isSelected={selectedProposal?.id === proposal.id}
+                      onSelect={(p) => setSelectedProposal(p)}
+                      semanticMatchProb={
+                        filters.semanticQuery.trim() ? semanticScores.get(proposal.id) : undefined
+                      }
+                    />
+                  ))}
+                </div>
               )}
             </div>
 
-            {/* Empty State */}
-            {filteredProposals.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-surface-border p-10 text-center space-y-3 shadow-soft">
-                <FilterX className="w-8 h-8 text-stone-300 mx-auto" />
-                <h3 className="text-sm font-semibold text-stone-800">No proposals match current filters</h3>
-                <p className="text-xs text-stone-500 max-w-sm mx-auto">
-                  Try clearing the semantic query or expanding the selected stages to see more proposals.
-                </p>
-                <button
-                  onClick={handleResetFilters}
-                  className="px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-medium hover:bg-stone-800 transition-all shadow-sm active:scale-95"
-                >
-                  Reset All Filters
-                </button>
-              </div>
-            ) : (
-              /* Proposal Cards Grid */
-              <div className="grid grid-cols-1 gap-4">
-                {filteredProposals.map((proposal) => (
-                  <ProposalCard
-                    key={proposal.id}
-                    proposal={proposal}
-                    isSelected={selectedProposal?.id === proposal.id}
-                    onSelect={(p) => setSelectedProposal(p)}
-                    semanticMatchProb={
-                      filters.semanticQuery.trim() ? semanticScores.get(proposal.id) : undefined
-                    }
-                  />
-                ))}
-              </div>
-            )}
+            {/* Right Column (Sticky State Inspector): 5 cols on LG */}
+            <div className="lg:col-span-5 sticky top-20 h-[calc(100dvh-6rem)]">
+              <StateInspector
+                proposal={selectedProposal}
+                onClose={() => setSelectedProposal(null)}
+                hasKey={hasKey}
+                onOpenKeyModal={() => setIsKeyModalOpen(true)}
+                onProposalUpdated={handleProposalUpdated}
+              />
+            </div>
           </div>
-
-          {/* Right Column (Sticky State Inspector): 5 cols on LG */}
-          <div className="lg:col-span-5 sticky top-20 h-[calc(100dvh-6rem)]">
-            <StateInspector
-              proposal={selectedProposal}
-              onClose={() => setSelectedProposal(null)}
-              hasKey={hasKey}
-              onOpenKeyModal={() => setIsKeyModalOpen(true)}
-              onProposalUpdated={handleProposalUpdated}
-            />
-          </div>
-        </div>
-      </main>
+        </main>
+      )}
 
       {/* API Key Modal */}
       <ApiKeyModal
