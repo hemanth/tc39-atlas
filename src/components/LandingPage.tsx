@@ -577,13 +577,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             {/* Architectural Signals */}
-            <div className="p-6 rounded-3xl bg-[#1a1a1a] text-neutral-100 border border-neutral-800 shadow-sm space-y-2.5">
+            <div className="p-6 rounded-3xl bg-white border border-neutral-300/80 shadow-sm space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-bold text-[#ff6b00]">VECTORS</span>
-                <Cpu className="w-4 h-4 text-[#ff6b00]" />
+                <Cpu className="w-4 h-4 text-neutral-400" />
               </div>
-              <h3 className="text-base font-bold text-white">Architectural Signals</h3>
-              <p className="text-xs text-neutral-400 leading-relaxed">
+              <h3 className="text-base font-bold text-neutral-900">Architectural Signals</h3>
+              <p className="text-xs text-neutral-600 leading-relaxed">
                 Calibrated probability vectors tracking Realm Sandboxing boundaries, TypeScript compiler changes, and Memory allocation primitives across all proposals.
               </p>
             </div>
